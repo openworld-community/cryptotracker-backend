@@ -78,7 +78,7 @@ class Database:
             cursor.execute(
                 """
                 DELETE FROM transactions
-                WHERE remaining_ttl = 0
+                WHERE remaining_ttl <= 0
                 """
             )
             self.conn.commit()
@@ -96,6 +96,22 @@ class Database:
         except Error as e:
             print(e)
             return []
+
+    def update_transaction_ttl(self, tick_interval):
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                """
+                UPDATE transactions
+                SET remaining_ttl = remaining_ttl - ?
+                WHERE remaining_ttl > 0
+                """,
+                (tick_interval,)
+            )
+            self.conn.commit()
+            cursor.close()
+        except Error as e:
+            print(e)
 
     def initialize_database(self):
         self.create_table()

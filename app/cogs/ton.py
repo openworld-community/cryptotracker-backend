@@ -9,5 +9,5 @@ TON_API_ENDPOINT = "https://testnet.toncenter.com"
 
 
 @router.get("/status_check")
-def example_route():
+def status_check():
     return {"api_status_code": requests.get(f"{TON_API_ENDPOINT}").status_code}

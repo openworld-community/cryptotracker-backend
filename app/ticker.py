@@ -15,6 +15,7 @@ async def tick():
     The function waits for 60 seconds after each loop before running the process again.
     """
     while True:
+        db.update_transaction_ttl(tick_interval)
         db.remove_expired_transactions()
         logging.info("Ticker ticked")
         await asyncio.sleep(1)  # Sleep for 60 seconds before the next tick

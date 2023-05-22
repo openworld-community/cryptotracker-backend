@@ -11,6 +11,9 @@ import logging
 from database import Database
 
 
+TICK_INTERVAL = 1
+TICK_COST = 1
+
 app = FastAPI()
 db = Database()  # Initialize database connection
 
@@ -27,8 +30,9 @@ for cog_file in cogs_dir.glob("*.py"):
 
 
 @app.on_event("startup")
-@repeat_every(seconds=60)
-async def startup_event():
+@repeat_every(seconds=TICK_INTERVAL)
+async def ticker():
+    db.update_transaction_ttl(TICK_COST)
     db.remove_expired_transactions()
     logging.info("Ticker ticked")
 
