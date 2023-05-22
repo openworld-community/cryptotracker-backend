@@ -11,7 +11,7 @@ import logging
 from database import Database
 
 
-TICK_INTERVAL = 1
+TICK_INTERVAL = 60
 TICK_COST = 1
 
 app = FastAPI()
