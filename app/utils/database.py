@@ -9,7 +9,7 @@ DB_PENDING_SCHEMA = """
     CREATE TABLE IF NOT EXISTS crypto_pending_transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         currency TEXT NOT NULL,
-        amount REAL NOT NULL,
+        amount INTEGER NOT NULL,
         remaining_ttl INTEGER NOT NULL
     )
 """
@@ -18,17 +18,15 @@ DB_PROCESSED_SCHEMA = """
 CREATE TABLE IF NOT EXISTS crypto_processed_transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         currency TEXT NOT NULL,
-        amount REAL NOT NULL,
+        amount INTEGER NOT NULL,
         transaction_hash TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
         from_address TEXT NOT NULL,
-        to_address TEXT NOT NULL
+        to_address TEXT NOT NULL,
+        event_id INTEGER NOT NULL,
+        uid INTEGER NOT NULL
     )
 """
-
-
-DEFAULT_TTL = 10
-
 
 
 class Database:
@@ -77,7 +75,7 @@ class Database:
         except Error as e:
             print(e)
     
-    def add_pending_transaction(self, currency, amount):
+    def add_pending_transaction(self, currency, amount, ttl):
         try:
             cursor = self.conn.cursor()
             cursor.execute(
@@ -85,7 +83,7 @@ class Database:
                 INSERT INTO crypto_pending_transactions (currency, amount, remaining_ttl)
                 VALUES (?, ?, ?)
                 """,
-                (currency, amount, DEFAULT_TTL)
+                (currency, amount, ttl)
             )
             self.conn.commit()
             cursor.close()
@@ -106,18 +104,35 @@ class Database:
         except Error as e:
             print(e)
 
-    def get_transactions(self):
+    def get_transactions(self, _type: str = "all", ticker=None):
         try:
             cursor = self.conn.cursor()
-            cursor.execute("SELECT * FROM crypto_processed_transactions")
-            rows = cursor.fetchall()
-            cursor.execute("SELECT * FROM crypto_pending_transactions")
-            rows += cursor.fetchall()
+            if _type == "all":
+                rows = cursor.execute("SELECT * FROM crypto_processed_transactions").fetchall()
+                rows += cursor.execute("SELECT * FROM crypto_pending_transactions").fetchall()
+            elif _type == "pending":
+                query = "SELECT * FROM crypto_pending_transactions"
+                if ticker:
+                    query += " WHERE currency = ?"
+                    rows = cursor.execute(query, (ticker,)).fetchall()
+                else:
+                    rows = cursor.execute(query).fetchall()
+
+            elif _type == "processed":
+                query = "SELECT * FROM crypto_processed_transactions"
+                if ticker:
+                    query += " WHERE currency = ?"
+                    rows = cursor.execute(query, (ticker,)).fetchall()
+                else:
+                    rows = cursor.execute(query).fetchall()
+
             cursor.close()
             return rows
+
         except Error as e:
             print(e)
-            return []
+            return None
+
 
     def update_transactions_ttl(self, tick_interval):
         try:
