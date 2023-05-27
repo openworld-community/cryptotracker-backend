@@ -21,4 +21,4 @@ for cog_file in cogs_dir.glob("*.py"):
 async def call_all():
     for cog in cogs_list:
         logging.info(f"Calling cog: {cog.__name__}")
-        logging.info(f"{await cog.process_transactions_from_api(await cog.retrieve_transactions_from_api())}")
+        logging.info(f"{await cog.process_transactions_from_api(await cog.retrieve_transactions_from_api())} transactions processed")

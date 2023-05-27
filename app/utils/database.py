@@ -8,6 +8,8 @@ DB_FILE = "transactions.db"
 DB_PENDING_SCHEMA = """
     CREATE TABLE IF NOT EXISTS crypto_pending_transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uid INTEGER NOT NULL,
+        event_id INTEGER NOT NULL,
         currency TEXT NOT NULL,
         amount INTEGER NOT NULL,
         remaining_ttl INTEGER NOT NULL
@@ -28,6 +30,12 @@ CREATE TABLE IF NOT EXISTS crypto_processed_transactions (
     )
 """
 
+DB_USER_SCHEMA = """
+    CREATE TABLE IF NOT EXISTS users (
+        uid INTEGER PRIMARY KEY
+    )
+
+"""
 
 class Database:
     def __init__(self):
@@ -40,6 +48,19 @@ class Database:
             print(e)
             return None
 
+    def check_user(self, uid):  # TODO GET READY FOR MIGRATION
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE uid = ?", (uid,))
+        if cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def add_user(self, uid):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO users (uid) VALUES (?)", (uid,))
+        self.conn.commit()
+        return None
 
     def close_connection(self):
         if self.conn:
@@ -59,6 +80,9 @@ class Database:
             cursor.execute(DB_PENDING_SCHEMA)
             self.conn.commit()
             cursor.close()
+
+            cursor.execute(DB_USER_SCHEMA)
+            self.conn.commit()
         except Error as e:
             print(e)
     
@@ -132,7 +156,6 @@ class Database:
         except Error as e:
             print(e)
             return None
-
 
     def update_transactions_ttl(self, tick_interval):
         try:
