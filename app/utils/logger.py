@@ -1,6 +1,6 @@
 import logging
 
-LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_LEVEL = logging.INFO
 LOG_FILE = "app.log"
 
