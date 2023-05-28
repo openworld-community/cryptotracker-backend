@@ -1,16 +1,14 @@
 import os
 from pathlib import Path
 import importlib
-
 import asyncio
-from fastapi import FastAPI, BackgroundTasks
+import logging
+import uvicorn
 
+from fastapi import FastAPI, BackgroundTasks
 from fastapi_utils.tasks import repeat_every
 from utils.logger import configure_logging
-import logging
 from utils.database import Database
-
-import uvicorn
 
 
 TICK_INTERVAL = 60
@@ -18,7 +16,6 @@ TICK_COST = 1
 
 app = FastAPI()
 db = Database()  # Initialize database connection
-
 
 db.initialize_database()
 configure_logging()
