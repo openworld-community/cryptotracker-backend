@@ -37,6 +37,7 @@ DB_USER_SCHEMA = """
 
 """
 
+
 class Database:
     def __init__(self):
         self.conn = self.create_connection()
@@ -65,7 +66,7 @@ class Database:
     def close_connection(self):
         if self.conn:
             self.conn.close()
-    
+
     def fetch_transaction_hashes(self):
         cursor = self.conn.cursor()
         cursor.execute("SELECT transaction_hash FROM crypto_processed_transactions")
@@ -85,20 +86,31 @@ class Database:
             self.conn.commit()
         except Error as e:
             print(e)
-    
-    def add_processed_transaction(self, currency, amount, transaction_hash, timestamp, from_address, to_address):
+
+    def add_processed_transaction(
+        self, currency, amount, transaction_hash, timestamp, from_address, to_address
+    ):
         try:
             cursor = self.conn.cursor()
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO crypto_processed_transactions (currency, amount, transaction_hash, timestamp, from_address, to_address)
                 VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (currency, amount, transaction_hash, timestamp, from_address, to_address))
+                (
+                    currency,
+                    amount,
+                    transaction_hash,
+                    timestamp,
+                    from_address,
+                    to_address,
+                ),
+            )
             self.conn.commit()
             cursor.close()
         except Error as e:
             print(e)
-    
+
     def add_pending_transaction(self, currency, amount, ttl):
         try:
             cursor = self.conn.cursor()
@@ -107,7 +119,7 @@ class Database:
                 INSERT INTO crypto_pending_transactions (currency, amount, remaining_ttl)
                 VALUES (?, ?, ?)
                 """,
-                (currency, amount, ttl)
+                (currency, amount, ttl),
             )
             self.conn.commit()
             cursor.close()
@@ -132,8 +144,12 @@ class Database:
         try:
             cursor = self.conn.cursor()
             if _type == "all":
-                rows = cursor.execute("SELECT * FROM crypto_processed_transactions").fetchall()
-                rows += cursor.execute("SELECT * FROM crypto_pending_transactions").fetchall()
+                rows = cursor.execute(
+                    "SELECT * FROM crypto_processed_transactions"
+                ).fetchall()
+                rows += cursor.execute(
+                    "SELECT * FROM crypto_pending_transactions"
+                ).fetchall()
             elif _type == "pending":
                 query = "SELECT * FROM crypto_pending_transactions"
                 if ticker:
@@ -166,7 +182,7 @@ class Database:
                 SET remaining_ttl = remaining_ttl - ?
                 WHERE remaining_ttl > 0
                 """,
-                (tick_interval,)
+                (tick_interval,),
             )
             self.conn.commit()
             cursor.close()
@@ -175,5 +191,3 @@ class Database:
 
     def initialize_database(self):
         self.create_tables()
-    
-    

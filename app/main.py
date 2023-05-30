@@ -32,16 +32,17 @@ for cog_file in cogs_dir.glob("*.py"):
 
 from utils import mgr
 
+
 @app.on_event("startup")
 @repeat_every(seconds=TICK_INTERVAL)
 async def ticker():
-
     logging.info("Manager calling all")
     await mgr.call_all()
 
     db.update_transactions_ttl(TICK_COST)
     db.remove_expired_transactions()
     logging.info("Ticker ticked")
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

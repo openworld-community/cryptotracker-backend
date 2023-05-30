@@ -13,12 +13,15 @@ for cog_file in cogs_dir.glob("*.py"):
         continue
 
     cog_module = importlib.import_module(f"cogs.{cog_module_name}")
-    
+
     logging.info(f"Loaded cog: {cog_module_name}")
 
     cogs_list.append(cog_module)
 
+
 async def call_all():
     for cog in cogs_list:
         logging.info(f"Calling cog: {cog.__name__}")
-        logging.info(f"{await cog.process_transactions_from_api(await cog.retrieve_transactions_from_api())} transactions processed")
+        logging.info(
+            f"{await cog.process_transactions_from_api(await cog.retrieve_transactions_from_api())} transactions processed"
+        )

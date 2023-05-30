@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class TransactionWaitingRequest(BaseModel):
     uid: int
     event_id: int
