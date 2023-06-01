@@ -21,6 +21,7 @@ TON_API_ENDPOINT = "https://testnet.toncenter.com"
 
 DEFAULT_TTL = 10
 
+TRANSACTION_MULTIPLIER = 1_000_000_000
 
 class TransactionWaitingResponse(BaseModel):
     ok: bool
@@ -63,7 +64,7 @@ async def process_transactions_from_api(transactions):
         parsed = await parse_transaction(transaction)
         db.add_processed_transaction(
             parsed["currency"],
-            parsed["amount"],
+            parsed["amount"] / TRANSACTION_MULTIPLIER,
             parsed["transaction_hash"],
             parsed["timestamp"],
             parsed["from"],
@@ -107,7 +108,7 @@ async def add_pending_transaction(
                     "value": {
                         "uid": 1111111111,
                         "event_id": 1,
-                        "amount": 2000000000,
+                        "amount": 2,
                         "ttl": 10,
                     },
                 }
@@ -116,7 +117,7 @@ async def add_pending_transaction(
     ]
 ):
     db.add_pending_transaction(
-        CURRENCY, transaction_request.amount, transaction_request.ttl
+        CURRENCY, transaction_request.amount * TRANSACTION_MULTIPLIER, transaction_request.ttl
     )
     return JSONResponse(status_code=201)
 
