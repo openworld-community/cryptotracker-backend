@@ -25,13 +25,26 @@ Each tick, the Crypto APIs are called and the results of all transactions are ad
 ## DB Reqs
 
 ```
-CREATE TABLE transactions (
+CREATE TABLE crypto_processed_transactions (
   id AUTOINCREMENT PRIMARY KEY,
-  sender_address text NOT NULL,
-  receiving_address text NOT NULL,
+  sender_address TEXT NOT NULL,
+  receiving_address TEXT NOT NULL,
   amount numeric(10,2) NOT NULL,
-  currency text NOT NULL,
-  status text NOT NULL,
+  currency TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+);
+```
+
+```
+CREATE TABLE crypto_pending_transactions (
+  id AUTOINCREMENT PRIMARY KEY,
+  sender_address TEXT NOT NULL,
+  receiving_address TEXT NOT NULL,
+  amount numeric(10,2) NOT NULL,
+  currency TEXT NOT NULL,
+  status TEXT NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );
