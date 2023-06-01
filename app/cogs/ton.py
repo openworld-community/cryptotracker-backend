@@ -8,6 +8,8 @@ from typing import Annotated
 import requests
 import logging
 
+import numpy # Handling Int64
+
 
 router = APIRouter()
 db = database.Database()
