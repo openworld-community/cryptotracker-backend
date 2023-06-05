@@ -8,19 +8,15 @@ from typing import Annotated
 import requests
 import logging
 
-import numpy # Handling Int64
-
-
 router = APIRouter()
 db = database.Database()
 
 TON_DEPOSIT_ADDRESS = "EQCqI4ITwXu0fAj1Y0B-FAD1bVh78dQTWh8vmEhVHJmOW0A2"
 CURRENCY = "TON"
-TON_API_KEY = "8248ac58bfc24d8e3731201f1ff2af5152ffde53134798158a984447150522ea"
+
 TON_API_ENDPOINT = "https://testnet.toncenter.com"
 
 DEFAULT_TTL = 10
-
 TRANSACTION_MULTIPLIER = 1_000_000_000
 
 class TransactionWaitingResponse(BaseModel):
