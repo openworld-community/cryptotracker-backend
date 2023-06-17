@@ -8,17 +8,16 @@ from typing import Annotated
 import requests
 import logging
 
-
 router = APIRouter()
 db = database.Database()
 
 TON_DEPOSIT_ADDRESS = "EQCqI4ITwXu0fAj1Y0B-FAD1bVh78dQTWh8vmEhVHJmOW0A2"
 CURRENCY = "TON"
-TON_API_KEY = "8248ac58bfc24d8e3731201f1ff2af5152ffde53134798158a984447150522ea"
+
 TON_API_ENDPOINT = "https://testnet.toncenter.com"
 
 DEFAULT_TTL = 10
-
+TRANSACTION_MULTIPLIER = 1_000_000_000
 
 class TransactionWaitingResponse(BaseModel):
     ok: bool
@@ -61,7 +60,7 @@ async def process_transactions_from_api(transactions):
         parsed = await parse_transaction(transaction)
         db.add_processed_transaction(
             parsed["currency"],
-            parsed["amount"],
+            parsed["amount"] / TRANSACTION_MULTIPLIER,
             parsed["transaction_hash"],
             parsed["timestamp"],
             parsed["from"],
@@ -108,7 +107,7 @@ async def add_pending_transaction(
                     "value": {
                         "uid": 1111111111,
                         "event_id": 1,
-                        "amount": 2000000000,
+                        "amount": 2,
                         "ttl": 10,
                     },
                 }
@@ -117,7 +116,7 @@ async def add_pending_transaction(
     ]
 ):
     db.add_pending_transaction(
-        CURRENCY, transaction_request.amount, transaction_request.ttl
+        CURRENCY, transaction_request.amount * TRANSACTION_MULTIPLIER, transaction_request.ttl
     )
     return JSONResponse(status_code=201)  # TODO: add response model
 

@@ -2,3 +2,4 @@ uvicorn
 fastapi
 fastapi-utils
 requests
+numpy
