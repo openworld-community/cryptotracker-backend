@@ -7,3 +7,7 @@ class TransactionWaitingRequest(BaseModel):
     amount: int
     transaction_type: str
     ttl: int = DEFAULT_TTL
+
+
+class PendingTransaction(BaseModel):
+    set_id: str

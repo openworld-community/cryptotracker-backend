@@ -72,8 +72,11 @@ async def process_transactions_from_api(transactions):
 
 
 async def parse_comment(comment: str):
-    if comment == "":
-        return None
+    return (
+        {
+                    "transaction_hash": comment,
+                } if comment else None
+    )
 
 
 async def parse_transaction(transaction):
@@ -100,7 +103,7 @@ async def add_pending_transaction(
         Body(
             examples={
                 "normal": {
-                    "summary": "Adds a pending transaction",
+                    "summary": "Adds a pending transaction and returns its internal transaction ID",
                     "description": "Adds a pending transaction of 2 TONs, which will be deleted after 10 ticks",
                     "value": {
                         "uid": 1111111111,
@@ -116,7 +119,7 @@ async def add_pending_transaction(
     db.add_pending_transaction(
         CURRENCY, transaction_request.amount, transaction_request.ttl
     )
-    return JSONResponse(status_code=201)
+    return JSONResponse(status_code=201)  # TODO: add response model
 
 
 @router.post("/force_process_transactions")
