@@ -75,7 +75,7 @@ async def parse_comment(comment: str):
         {
                     "transaction_hash": comment,
                 } if comment else None
-    )
+    )  # TODO: internal identifying hashes
 
 
 async def parse_transaction(transaction):
