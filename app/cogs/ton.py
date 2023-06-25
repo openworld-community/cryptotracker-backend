@@ -11,17 +11,16 @@ import logging
 router = APIRouter()
 db = database.Database()
 
-TON_DEPOSIT_ADDRESS = "EQCqI4ITwXu0fAj1Y0B-FAD1bVh78dQTWh8vmEhVHJmOW0A2"
+TON_DEPOSIT_ADDRESS = "EQCqI4ITwXu0fAj1Y0B-FAD1bVh78dQTWh8vmEhVHJmOW0A2" # Switch to mainnet address for Prod
 CURRENCY = "TON"
 
-TON_API_ENDPOINT = "https://testnet.toncenter.com"
+TON_API_ENDPOINT = "https://testnet.toncenter.com" # Switch to toncenter.com for Prod
 
-DEFAULT_TTL = 10
-TRANSACTION_MULTIPLIER = 1_000_000_000
+DEFAULT_TTL = 10 # TTL Cost is in main.py
+TRANSACTION_MULTIPLIER = 1_000_000_000 # 2 TON in API is 2000000000
 
 class TransactionWaitingResponse(BaseModel):
     ok: bool
-
 
 @router.get("/status_check")
 async def status_check():
@@ -65,6 +64,7 @@ async def process_transactions_from_api(transactions):
             parsed["timestamp"],
             parsed["from"],
             parsed["to"],
+            # parsed["for"] # TODO: parse comment, internal id hashes
         )
 
     return len(transactions) - len(existing_transactions_hashes)
@@ -86,7 +86,7 @@ async def parse_transaction(transaction):
         "transaction_hash": transaction["transaction_id"]["hash"],
         "from": transaction["in_msg"]["source"],
         "to": transaction["in_msg"]["destination"],
-        "for_uid": transaction["in_msg"][""],
+        # "for_uid": transaction["in_msg"][""], # TODO: add 'for' payment model
     }
 
 
